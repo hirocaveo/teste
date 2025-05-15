@@ -37,9 +37,9 @@ export default function Home() {
         if (!hostComponent) return;
 
         const initializeFaceRecon = () => {
-          const webFaceRecon = new (window as any).ZaigWebFaceRecon.WebFaceRecon(
+          const webFaceRecon = new window.ZaigWebFaceRecon.WebFaceRecon(
             hostComponent,
-            process.env.NEXT_PUBLIC_FACE_RECOGNITION_KEY
+            process.env.NEXT_PUBLIC_FACE_RECOGNITION_KEY!
           )
             .setThemeConfiguration({
               buttonColor: "#2848A8",
@@ -53,11 +53,15 @@ export default function Home() {
 
           webFaceRecon.initialize()
             .then(() => webFaceRecon.open())
-            .then((image_key: any) => {
+            .then((image_key: string) => {
               console.log('Captured image key:', image_key);
             })
-            .catch((err: any) => {
-              console.error('Face recognition error:', err);
+            .catch((err: unknown) => {
+              if (err instanceof Error) {
+                console.error('Face recognition error:', err.message);
+              } else {
+                console.error('Face recognition error:', err);
+              }
             });
         };
 
